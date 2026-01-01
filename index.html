@@ -1,1 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Ms Loafy Casino</title>
 
+  <!-- Animated favicon hope it works if it doesnt i dont even know anymore... -->
+  <link rel="icon" type="image/gif" href="msloafyadvanced.gif">
+
+  <style>
+    @font-face {
+      font-family: "Determination";
+      src: url("Determination.ttf");
+    } 
+
+    body { 
+      font-family: "Determination", monospace;
+      background: #0b0620;
+      color: white;
+      text-align: center;
+      padding: 30px;
+    }
+
+    h1 {
+      color: #b46cff;
+    }
+
+    #owner {
+      width: 200px;
+      margin-bottom: 10px;
+    }
+
+    #balance {
+      font-size: 24px;
+      margin: 15px 0;
+    }
+
+    #balance img {
+      width: 24px;
+      vertical-align: middle;
+    }
+
+    .slot-machine {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      margin: 20px 0;
+    }
+
+    .slot {
+      width: 100px;
+      height: 100px;
+      font-size: 64px;
+      background: #1a0f3d;
+      border: 4px solid #b46cff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    button {
+      font-family: "Determination", monospace;
+      font-size: 20px;
+      padding: 10px 20px;
+      background: #b46cff;
+      border: none;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #e07bff;
+    }
+
+    #message {
+      margin-top: 20px;
+      font-size: 18px;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Ms. Loafy Casino</h1>
+
+  <!-- Slot machine owner the great ms loafy i am fucking losing my mind coding this -->
+  <img id="owner" src="msloafyadvanced.png" alt="Ms Loafy">
+
+  <div id="balance">
+    <img src="nubert.png">
+    <span id="coinCount">0</span> NubertCoin
+  </div>
+
+  <div class="slot-machine">
+    <div class="slot" id="slot1">❓</div>
+    <div class="slot" id="slot2">❓</div>
+    <div class="slot" id="slot3">❓</div>
+  </div>
+
+  <button id="spinBtn">SPIN (3 NubertCoin)</button>
+
+  <div id="message"></div>
+
+  <script>
+    const EMOJIS = [
+      "🧑‍🦼", "📏", "🤸🏿‍♀️", "🧿", "🫀", "🦴", "🧠", "🪱",
+      "🦠", "👁️", "🪬", "🫥", "🐶", "🧃", "sus"
+    ];
+
+    const COST = 3;
+    const DAILY = 25;
+
+    const slots = [
+      document.getElementById("slot1"),
+      document.getElementById("slot2"),
+      document.getElementById("slot3")
+    ];
+
+    const coinCount = document.getElementById("coinCount");
+    const message = document.getElementById("message");
+
+    function today() {
+      return new Date().toDateString();
+    }
+
+    function loadCoins() {
+      let coins = Number(localStorage.getItem("coins")) || 0;
+      let last = localStorage.getItem("lastDay");
+
+      if (last !== today()) {
+        coins += DAILY;
+        localStorage.setItem("lastDay", today());
+      }
+
+      localStorage.setItem("coins", coins);
+      updateUI();
+    }
+
+    function updateUI() {
+      coinCount.textContent = localStorage.getItem("coins");
+    }
+
+    function randomEmoji() {
+      return EMOJIS[Math.floor(Math.random() * EMOJIS.length)];
+    }
+
+    document.getElementById("spinBtn").onclick = () => {
+      let coins = Number(localStorage.getItem("coins"));
+
+      if (coins < COST) {
+        message.textContent = "Ms Loafy denies you. Not enough NubertCoins.";
+        return;
+      }
+
+      coins -= COST;
+      message.textContent = "Spinning...";
+
+      let spins = 10;
+      const spinInterval = setInterval(() => {
+        slots.forEach(s => s.textContent = randomEmoji());
+        spins--;
+        if (spins <= 0) {
+          clearInterval(spinInterval);
+
+          const a = slots[0].textContent;
+          const b = slots[1].textContent;
+          const c = slots[2].textContent;
+
+          if (a === b && b === c) {
+            coins += 10;
+            message.textContent = "JACKPOT! Ms Loafy approves. +10!";
+          } else {
+            message.textContent = "Ms Loafy stares at you silently.";
+          }
+
+          localStorage.setItem("coins", coins);
+          updateUI();
+        }
+      }, 80);
+    };
+
+    loadCoins();
+  </script>
+
+</body>
+</html>
